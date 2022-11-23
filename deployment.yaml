@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: file-server
+  name: file-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-server
+  template:
+    metadata:
+      labels:
+        app: file-server
+    spec:
+      containers:
+        - name: rsync
+          image: quay.io/gbenhaim0/rsync-image:latest
+          ports:
+            - containerPort: 8730
+              name: rsync-port
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          volumeMounts:
+            - name: rsyncd-conf
+              mountPath: /etc/rsyncd.conf
+              subPath: rsyncd.conf
+            - name: files
+              mountPath: /mnt/files
+        - name: nginx
+          image: registry.access.redhat.com/ubi8/nginx-120:latest
+          command: ["nginx", "-g", "daemon off;"]
+          ports:
+            - containerPort: 8080
+              name: http-port
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/
+            - name: files
+              mountPath: /mnt/files
+      volumes:
+        - name: rsyncd-conf
+          configMap:
+            name: rsyncd-conf
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+        - name: files
+          emptyDir:
+            sizeLimit: 1Gi
+
