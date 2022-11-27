@@ -54,6 +54,6 @@ spec:
           configMap:
             name: nginx-conf
         - name: files
-          emptyDir:
-            sizeLimit: 1Gi
+          persistentVolumeClaim:
+            claimName: fileserver-claim
 

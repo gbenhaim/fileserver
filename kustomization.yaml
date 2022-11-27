@@ -4,6 +4,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - route.yaml
+  - pvc.yaml
 configMapGenerator:
   - name: nginx-conf
     files:
