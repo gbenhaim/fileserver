@@ -21,6 +21,11 @@ spec:
           ports:
             - containerPort: 8730
               name: rsync-port
+          livenessProbe:
+            tcpSocket:
+              port: rsync-port
+            initialDelaySeconds: 3
+            periodSeconds: 30
           resources:
             limits:
               memory: 256Mi
@@ -37,6 +42,12 @@ spec:
           ports:
             - containerPort: 8080
               name: http-port
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http-port
+            initialDelaySeconds: 5
+            periodSeconds: 30
           resources:
             limits:
               memory: 256Mi
